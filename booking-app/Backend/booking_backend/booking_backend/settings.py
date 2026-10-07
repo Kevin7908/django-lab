@@ -31,8 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'room_booking',
     'rest_framework',
+    'rest_framework.authtoken',
+    'drf_spectacular',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -136,3 +140,41 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'room_booking.User'
 AUTHENTICATION_BACKENDS = ['room_booking.auth_backend.EmailBackend']
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    # drf-spectacular genera el esquema OpenAPI 3 a partir de vistas y serializers
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Booking API',
+    'DESCRIPTION': 'API de reservas de habitaciones (rooms, fechas ocupadas, usuarios y autenticación).',
+    'VERSION': '1.0.0',
+    # No incluir el endpoint /api/schema/ dentro del propio esquema
+    'SERVE_INCLUDE_SCHEMA': False,
+    # Permite subir archivos (ImageField) desde Swagger UI
+    'COMPONENT_SPLIT_REQUEST': True,
+    # Oculta las rutas duplicadas tipo /rooms.json que crea format_suffix_patterns
+    'PREPROCESSING_HOOKS': ['drf_spectacular.hooks.preprocess_exclude_path_format'],
+}
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173"
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    # "https://booking-app-nine-ruby.vercel.app"
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = [
+    "Content-Type",
+    "Authorization",
+]
