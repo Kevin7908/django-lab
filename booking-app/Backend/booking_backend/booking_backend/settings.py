@@ -133,3 +133,6 @@ import os
 #For offline serving
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AUTH_USER_MODEL = 'room_booking.User'
+AUTHENTICATION_BACKENDS = ['room_booking.auth_backend.EmailBackend']

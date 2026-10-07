@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 # Create your models here.
@@ -56,3 +57,6 @@ class OccupiedDate(models.Model):
     def __str__(self):
         return f"{self.date} - {self.room.name} booked by {self.user.username}"
 
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    full_name = models.CharField(max_length=100, default='')
