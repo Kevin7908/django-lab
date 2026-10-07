@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
@@ -28,3 +29,30 @@ class Room(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.room_type})"
+
+class RoomImage(models.Model):
+    # Stores the image file associated with a room.
+    # Uploaded images will be placed inside the "room_images/" directory.
+    image = models.ImageField(upload_to="room_images/")
+
+    # Optional text describing the image.
+    # blank=True allows it to be empty in forms.
+    # null=True allows the database to store NULL.
+    caption = models.CharField(max_length=255, blank=True, null=True)
+
+    # Connects this image to a specific Room.
+    # A room can have multiple images because of related_name="images".
+    # If the room is deleted, all its images are deleted as well.
+    room = models.ForeignKey(Room, related_name="images", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Image for: {self.room.name} - {self.caption or 'no caption'}"
+
+class OccupiedDate(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="ocupiedDates")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='booked_dates')
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.date} - {self.room.name} booked by {self.user.username}"
+
